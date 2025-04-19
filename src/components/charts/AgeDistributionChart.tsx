@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { AgeDistribution } from '@/lib/mockApi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Button } from '@/components/ui/button';
 
 interface AgeDistributionChartProps {
   ageDistribution: AgeDistribution[];
@@ -9,13 +10,21 @@ interface AgeDistributionChartProps {
 
 const AgeDistributionChart: React.FC<AgeDistributionChartProps> = ({ ageDistribution }) => {
   // Add console logging to help debug
-  console.log("Age Distribution Data:", ageDistribution);
+  useEffect(() => {
+    console.log("Age Distribution Data:", ageDistribution);
+  }, [ageDistribution]);
   
-  // If no data or empty array, show a message
+  // If no data or empty array, show a message with guidance
   if (!ageDistribution || ageDistribution.length === 0) {
     return (
-      <div className="h-64 flex items-center justify-center">
-        <p className="text-muted-foreground">No age distribution data available. Try generating some employee data.</p>
+      <div className="h-64 flex flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground">No age distribution data available.</p>
+        <div className="flex items-center">
+          <svg className="h-5 w-5 mr-2 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <p className="text-sm">Use the "Generate & Save Data" button in the Data Generation section.</p>
+        </div>
       </div>
     );
   }

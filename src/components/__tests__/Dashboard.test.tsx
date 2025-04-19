@@ -20,7 +20,25 @@ vi.mock('@/context/AuthContext', async () => {
   };
 });
 
-const queryClient = new QueryClient();
+// Mock the employee service functions
+vi.mock('@/lib/employeeService', () => ({
+  fetchEmployees: vi.fn(() => Promise.resolve({ data: [], count: 0 })),
+  getDepartmentStats: vi.fn(() => Promise.resolve([])),
+  getSalaryDistribution: vi.fn(() => Promise.resolve([])),
+  getAgeDistribution: vi.fn(() => Promise.resolve([])),
+  getGenderDistribution: vi.fn(() => Promise.resolve([])),
+  getTenureDistribution: vi.fn(() => Promise.resolve([])),
+  insertEmployees: vi.fn(() => Promise.resolve({ success: true })),
+  exportEmployeesToCSV: vi.fn(),
+}));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 const renderWithProviders = (component: React.ReactNode) => {
   return render(

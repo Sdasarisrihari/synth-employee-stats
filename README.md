@@ -73,6 +73,17 @@ A comprehensive web application for employee data management and analytics, comb
 - Real-time data updates
 - Frontend rate limiting to prevent API abuse
 
+## Important Usage Notes
+
+### Generating Data
+Before you can view any charts or statistics, you **must first generate sample data**:
+1. Locate the "Data Generation" section at the top of the dashboard
+2. Set the desired number of employees (default: 100)
+3. Click the "Generate & Save Data" button
+4. Wait for the data to be processed and saved
+
+All charts and statistics will automatically update once data is available. If you see a message saying "No data available", this means you need to generate data first.
+
 ## Local Development Setup
 
 ### Prerequisites
