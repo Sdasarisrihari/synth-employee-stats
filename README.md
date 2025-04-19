@@ -40,7 +40,7 @@ A comprehensive web application for employee data management and analytics, comb
 - Total employee count
 - Average salary
 - Overall performance metrics
-- Workforce age distribution
+- Workforce demographics
 
 ### 2. Department Statistics
 - Employee count per department
@@ -49,18 +49,29 @@ A comprehensive web application for employee data management and analytics, comb
 
 ### 3. Salary Insights
 - Salary range distribution
-- Comparative salary analysis
-- Salary brackets visualization
+- Comprehensive salary breakdown
+- Interactive visualization of salary brackets
 
 ### 4. Demographics
 - Age group distribution
+  - Breakdown by age ranges (Under 25, 25-34, 35-44, 45-54, 55+)
+  - Interactive bar chart visualization
 - Gender composition
-- Workforce diversity metrics
+  - Detailed gender distribution
+  - Pie chart representation of workforce diversity
 
 ### 5. Tenure Analysis
 - Years of service breakdown
 - Employee retention insights
 - Experience level distribution
+
+## Data Visualization Features
+
+- Interactive charts powered by Recharts
+- Responsive design
+- Tooltips for detailed information
+- Real-time data updates
+- Frontend rate limiting to prevent API abuse
 
 ## Local Development Setup
 
@@ -81,16 +92,16 @@ npm install
 npm run dev
 
 # Generate synthetic data
-cd ../backend
-python manage.py generate_employees --employees 200
+# Uses the "Generate & Save Data" button in the Dashboard
 ```
 
 ## Data Generation
 
 ### Synthetic Data Creation
-- Generates 200 employee records
-- Creates realistic employee profiles
-- Populates dashboard with meaningful data
+- Generates employee records with:
+  - Realistic personal and professional details
+  - Diverse demographic information
+  - Comprehensive performance data
 
 ### Data Attributes
 - Departments
@@ -99,16 +110,6 @@ python manage.py generate_employees --employees 200
 - Genders
 - Hire dates
 - Performance scores
-
-## Testing
-
-```bash
-# Frontend tests
-npm run test
-
-# Backend tests
-python manage.py test
-```
 
 ## Deployment
 
