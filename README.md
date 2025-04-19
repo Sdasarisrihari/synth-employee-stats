@@ -3,9 +3,9 @@
 
 ## Project Overview
 
-This is a comprehensive Employee Analytics web application built with modern web technologies, designed to provide insights into workforce data and performance metrics.
+A comprehensive web application for employee data management and analytics, combining a React frontend with a Django backend and Supabase integration.
 
-## Technologies Used
+## Technologies
 
 - **Frontend**: 
   - React
@@ -15,31 +15,52 @@ This is a comprehensive Employee Analytics web application built with modern web
   - Shadcn UI
 
 - **Backend**: 
-  - Django (Python)
+  - Django
   - PostgreSQL
-  - REST API
+  - Django REST Framework
 
 - **Additional Tools**:
-  - Supabase (Authentication, Database)
+  - Supabase (Authentication)
   - Docker
   - Vitest (Testing)
 
-## Key Features
+## API Endpoints
 
-- Employee Data Management
-- Performance Analytics
-- Interactive Data Visualizations
-- Department Insights
-- Salary Distribution
-- Tenure and Age Distribution
-- Gender Analysis
+### Employee Management
+- `GET /api/employees/`: List all employees
+  - Supports pagination
+  - Allows filtering and searching
+  - Returns employee details
+
+- `GET /api/employees/{id}/`: Retrieve specific employee details
+  - Returns comprehensive information for a single employee
+
+### Analytics
+- `GET /api/analytics/departments/`: Department-level statistics
+  - Employee count per department
+  - Average salary
+  - Performance metrics
+
+- `GET /api/analytics/salary-distribution/`: Salary range distribution
+- `GET /api/analytics/age-distribution/`: Employee age demographics
+- `GET /api/analytics/gender-distribution/`: Gender breakdown
+- `GET /api/analytics/tenure-distribution/`: Employee tenure analysis
+
+### Data Export
+- `GET /api/export/employees/`: Export employee data to CSV
+  - Generates a downloadable CSV file with comprehensive employee information
+
+### System
+- `GET /health/`: Health check endpoint
+  - Verifies system and database connectivity
+  - Provides basic system status information
 
 ## Local Development Setup
 
 ### Prerequisites
-
 - Node.js 20+
 - npm
+- Python 3.10+
 - Docker (optional)
 
 ### Quick Start
@@ -48,46 +69,42 @@ This is a comprehensive Employee Analytics web application built with modern web
 # Clone the repository
 git clone <your-repo-url>
 
-# Navigate to project directory
-cd employee-analytics
-
-# Install dependencies
+# Frontend setup
+cd frontend
 npm install
-
-# Start development server
 npm run dev
+
+# Backend setup
+cd backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python manage.py runserver
 ```
 
-## Running Tests
+## Testing
 
 ```bash
-# Run unit tests
+# Frontend tests
 npm run test
 
-# Generate test coverage report
-npm run test:coverage
-```
-
-## Docker Deployment
-
-```bash
-# Build and start containers
-docker-compose up -d
-
-# Stop containers
-docker-compose down
+# Backend tests
+python manage.py test
 ```
 
 ## Deployment
 
-The application can be easily deployed through Vercel or by following standard React deployment procedures.
+Supports deployment through:
+- Vercel (Frontend)
+- Heroku or similar platforms (Backend)
+- Docker containers
 
 ## Contributing
 
 1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
+2. Create a feature branch
+3. Commit changes
+4. Push to the branch
 5. Open a Pull Request
 
 ## License
