@@ -1,7 +1,5 @@
 
 import Dashboard from "@/components/Dashboard";
-import ApiInfo from "@/components/ApiInfo";
-import DatabaseInfo from "@/components/DatabaseInfo";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/context/AuthContext";
@@ -55,8 +53,6 @@ const Index = () => {
       
       <div className="container py-8 flex-1">
         <Dashboard />
-        <ApiInfo />
-        <DatabaseInfo />
       </div>
       <Footer />
     </div>
@@ -64,3 +60,4 @@ const Index = () => {
 };
 
 export default Index;
+
