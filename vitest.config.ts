@@ -11,10 +11,6 @@ export default defineConfig({
     globals: true,
     coverage: {
       reporter: ['text', 'json', 'html'],
-    },
-    // Add type declarations for testing libraries
-    typeDeclarations: {
-      include: ['@testing-library/jest-dom']
     }
   },
   resolve: {
