@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-A comprehensive web application for employee data management and analytics, combining a React frontend with a Django backend and Supabase integration.
+A comprehensive web application for employee data management and analytics, combining a React frontend with a Supabase backend and advanced data visualization capabilities.
 
 ## Technologies
 
@@ -13,55 +13,61 @@ A comprehensive web application for employee data management and analytics, comb
   - Vite
   - Tailwind CSS
   - Shadcn UI
+  - Recharts (Data Visualization)
 
 - **Backend**: 
-  - Django
+  - Supabase
   - PostgreSQL
-  - Django REST Framework
+  - Row Level Security (RLS)
 
-- **Additional Tools**:
-  - Supabase (Authentication)
-  - Docker
-  - Vitest (Testing)
+## Key Features
 
-## API Endpoints
+### Data Management
+- Synthetic data generation
+- Comprehensive employee record management
+- Real-time data updates
 
-### Employee Management
-- `GET /api/employees/`: List all employees
-  - Supports pagination
-  - Allows filtering and searching
-  - Returns employee details
+### Analytics Dashboard
+- Department-level statistics
+- Salary distribution analysis
+- Age demographics visualization
+- Gender breakdown
+- Employee tenure tracking
 
-- `GET /api/employees/{id}/`: Retrieve specific employee details
-  - Returns comprehensive information for a single employee
+## Dashboard Sections
 
-### Analytics
-- `GET /api/analytics/departments/`: Department-level statistics
-  - Employee count per department
-  - Average salary
-  - Performance metrics
+### 1. Overview
+- Total employee count
+- Average salary
+- Overall performance metrics
+- Workforce age distribution
 
-- `GET /api/analytics/salary-distribution/`: Salary range distribution
-- `GET /api/analytics/age-distribution/`: Employee age demographics
-- `GET /api/analytics/gender-distribution/`: Gender breakdown
-- `GET /api/analytics/tenure-distribution/`: Employee tenure analysis
+### 2. Department Statistics
+- Employee count per department
+- Department-wise salary ranges
+- Performance metrics by department
 
-### Data Export
-- `GET /api/export/employees/`: Export employee data to CSV
-  - Generates a downloadable CSV file with comprehensive employee information
+### 3. Salary Insights
+- Salary range distribution
+- Comparative salary analysis
+- Salary brackets visualization
 
-### System
-- `GET /health/`: Health check endpoint
-  - Verifies system and database connectivity
-  - Provides basic system status information
+### 4. Demographics
+- Age group distribution
+- Gender composition
+- Workforce diversity metrics
+
+### 5. Tenure Analysis
+- Years of service breakdown
+- Employee retention insights
+- Experience level distribution
 
 ## Local Development Setup
 
 ### Prerequisites
 - Node.js 20+
 - npm
-- Python 3.10+
-- Docker (optional)
+- Supabase account
 
 ### Quick Start
 
@@ -74,13 +80,25 @@ cd frontend
 npm install
 npm run dev
 
-# Backend setup
-cd backend
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-python manage.py runserver
+# Generate synthetic data
+cd ../backend
+python manage.py generate_employees --employees 200
 ```
+
+## Data Generation
+
+### Synthetic Data Creation
+- Generates 200 employee records
+- Creates realistic employee profiles
+- Populates dashboard with meaningful data
+
+### Data Attributes
+- Departments
+- Salaries
+- Ages
+- Genders
+- Hire dates
+- Performance scores
 
 ## Testing
 
@@ -96,7 +114,7 @@ python manage.py test
 
 Supports deployment through:
 - Vercel (Frontend)
-- Heroku or similar platforms (Backend)
+- Supabase (Backend & Database)
 - Docker containers
 
 ## Contributing
