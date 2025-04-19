@@ -2,7 +2,18 @@
 import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import type {} from '@testing-library/jest-dom/vitest';
+
+// This is necessary to fix the TypeScript error for jest-dom extensions
+declare global {
+  namespace Vi {
+    interface JestAssertion<T = any> {
+      toBeInTheDocument(): T;
+      toBeVisible(): T;
+      toHaveFocus(): T;
+      toHaveTextContent(text: string): T;
+    }
+  }
+}
 
 // Cleanup after each test
 afterEach(() => {

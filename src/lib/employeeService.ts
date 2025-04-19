@@ -1,7 +1,5 @@
 
-import { supabase } from "./supabase";
 import { toast } from "sonner";
-import { Insertable, Tables } from "./supabase-types";
 import { 
   DepartmentStats, 
   SalaryDistribution, 
@@ -9,9 +7,12 @@ import {
   GenderDistribution, 
   TenureDistribution 
 } from "./mockApi";
+import { Tables, Insertable } from "./supabase-types";
+
+// API base URL - this should point to the Django backend
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 // Rate limiting implementation - simple frontend rate limiting
-// For a real app, you'd implement this on the server
 let lastRequestTime = 0;
 const minRequestInterval = 1000; // 1 second between requests
 
@@ -25,6 +26,15 @@ const checkRateLimit = (): boolean => {
   return true;
 };
 
+// Helper function to get auth headers for authenticated requests
+const getAuthHeaders = () => {
+  const token = localStorage.getItem('authToken');
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': token ? `Bearer ${token}` : ''
+  };
+};
+
 // Fetch employees with pagination and filtering
 export const fetchEmployees = async (
   page = 1,
@@ -34,23 +44,27 @@ export const fetchEmployees = async (
   if (!checkRateLimit()) return { data: [], count: 0 };
 
   try {
-    let query = supabase
-      .from("employees")
-      .select("*", { count: "exact" });
-
+    let url = `${API_URL}/employees/?page=${page}&page_size=${pageSize}`;
+    
     if (searchTerm) {
-      query = query.or(
-        `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,position.ilike.%${searchTerm}%,department.ilike.%${searchTerm}%`
-      );
+      url += `&search=${encodeURIComponent(searchTerm)}`;
     }
 
-    const { data, error, count } = await query
-      .range((page - 1) * pageSize, page * pageSize - 1)
-      .order("created_at", { ascending: false });
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
 
-    if (error) throw error;
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
 
-    return { data, count: count || 0 };
+    const result = await response.json();
+    
+    return { 
+      data: result.results, 
+      count: result.count 
+    };
   } catch (error: any) {
     toast.error("Failed to fetch employees: " + error.message);
     return { data: [], count: 0 };
@@ -62,11 +76,17 @@ export const getDepartmentStats = async (): Promise<DepartmentStats[]> => {
   if (!checkRateLimit()) return [];
 
   try {
-    const { data, error } = await supabase.rpc('get_department_stats');
-    
-    if (error) throw error;
-    
-    return data || [];
+    const response = await fetch(`${API_URL}/analytics/departments/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     toast.error("Failed to fetch department stats: " + error.message);
     console.error("Error fetching department stats:", error);
@@ -79,11 +99,17 @@ export const getSalaryDistribution = async (): Promise<SalaryDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const { data, error } = await supabase.rpc('get_salary_distribution');
-    
-    if (error) throw error;
-    
-    return data || [];
+    const response = await fetch(`${API_URL}/analytics/salary-distribution/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     toast.error("Failed to fetch salary distribution: " + error.message);
     return [];
@@ -95,11 +121,17 @@ export const getAgeDistribution = async (): Promise<AgeDistribution[]> => {
   if (!checkRateLimit()) return [];
 
   try {
-    const { data, error } = await supabase.rpc('get_age_distribution');
-    
-    if (error) throw error;
-    
-    return data || [];
+    const response = await fetch(`${API_URL}/analytics/age-distribution/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     toast.error("Failed to fetch age distribution: " + error.message);
     return [];
@@ -111,29 +143,17 @@ export const getGenderDistribution = async (): Promise<GenderDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const { data, error } = await supabase.from('employees')
-      .select('gender')
-      .then(({ data, error }) => {
-        if (error) throw error;
-        
-        const genderCounts: Record<string, number> = {};
-        data.forEach(employee => {
-          const gender = employee.gender;
-          genderCounts[gender] = (genderCounts[gender] || 0) + 1;
-        });
-        
-        return {
-          data: Object.entries(genderCounts).map(([gender, count]) => ({
-            gender,
-            count
-          })),
-          error: null
-        };
-      });
-    
-    if (error) throw error;
-    
-    return data || [];
+    const response = await fetch(`${API_URL}/analytics/gender-distribution/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     toast.error("Failed to fetch gender distribution: " + error.message);
     return [];
@@ -145,11 +165,17 @@ export const getTenureDistribution = async (): Promise<TenureDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const { data, error } = await supabase.rpc('get_tenure_distribution');
-    
-    if (error) throw error;
-    
-    return data || [];
+    const response = await fetch(`${API_URL}/analytics/tenure-distribution/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
   } catch (error: any) {
     toast.error("Failed to fetch tenure distribution: " + error.message);
     return [];
@@ -161,11 +187,15 @@ export const insertEmployees = async (employees: Insertable<"employees">[]) => {
   if (!checkRateLimit()) return { success: false };
 
   try {
-    const { error } = await supabase
-      .from("employees")
-      .insert(employees);
-    
-    if (error) throw error;
+    const response = await fetch(`${API_URL}/employees/`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(employees)
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
     
     toast.success("Employees added successfully!");
     return { success: true };
@@ -180,28 +210,19 @@ export const exportEmployeesToCSV = async () => {
   if (!checkRateLimit()) return;
 
   try {
-    const { data, error } = await supabase
-      .from("employees")
-      .select("*");
-    
-    if (error) throw error;
-    
-    if (!data || data.length === 0) {
-      toast.error("No data to export");
-      return;
+    const response = await fetch(`${API_URL}/export/employees/`, {
+      method: 'GET',
+      headers: getAuthHeaders()
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
     }
     
-    // Convert data to CSV format
-    const headers = Object.keys(data[0]).join(",");
-    const rows = data.map(row => 
-      Object.values(row).map(value => 
-        typeof value === "string" ? `"${value.replace(/"/g, '""')}"` : value
-      ).join(",")
-    );
-    const csv = [headers, ...rows].join("\n");
+    // Get the CSV content
+    const blob = await response.blob();
     
-    // Create a blob and download it
-    const blob = new Blob([csv], { type: "text/csv" });
+    // Create a download link and trigger it
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
