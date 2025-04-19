@@ -10,7 +10,12 @@ declare global {
       toBeInTheDocument(): T;
       toBeVisible(): T;
       toHaveFocus(): T;
-      toHaveTextContent(text: string): T;
+      toHaveTextContent(text: string | RegExp): T;
+      toHaveAttribute(attr: string, value?: any): T;
+      toHaveClass(...classNames: string[]): T;
+      toHaveStyle(css: Record<string, any>): T;
+      toContainElement(element: HTMLElement | null): T;
+      toContainHTML(html: string): T;
     }
   }
 }

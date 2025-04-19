@@ -12,9 +12,9 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'json', 'html'],
     },
-    // Explicitly include jest-dom types
     typecheck: {
-      include: ['**/*.{test,spec}.{ts,tsx}']
+      include: ['**/*.{test,spec}.{ts,tsx}'],
+      tsconfig: './tsconfig.json',
     }
   },
   resolve: {
