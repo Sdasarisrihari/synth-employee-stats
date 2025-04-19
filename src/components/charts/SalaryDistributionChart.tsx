@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SalaryDistribution } from '@/lib/mockApi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -8,6 +8,11 @@ interface SalaryDistributionChartProps {
 }
 
 const SalaryDistributionChart: React.FC<SalaryDistributionChartProps> = ({ salaryDistribution }) => {
+  // Add console logging to help debug
+  useEffect(() => {
+    console.log("Salary Distribution Data:", salaryDistribution);
+  }, [salaryDistribution]);
+  
   // If no data or empty array, show a message with guidance
   if (!salaryDistribution || salaryDistribution.length === 0) {
     return (
