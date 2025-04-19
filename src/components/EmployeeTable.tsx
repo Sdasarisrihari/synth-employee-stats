@@ -22,9 +22,9 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
 
   // Filter employees based on search term
   const filteredEmployees = employees.filter((employee) => {
-    // Handle both property naming conventions (firstName/first_name)
-    const firstName = employee.firstName || employee.first_name || '';
-    const lastName = employee.lastName || employee.last_name || '';
+    // Use the correct property names from the Employee type
+    const firstName = employee.firstName || '';
+    const lastName = employee.lastName || '';
     const fullName = `${firstName} ${lastName}`.toLowerCase();
     const department = (employee.department || '').toLowerCase();
     const position = (employee.position || '').toLowerCase();
@@ -76,7 +76,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
               currentEmployees.map((employee) => (
                 <TableRow key={employee.id}>
                   <TableCell className="font-medium">
-                    {employee.firstName || employee.first_name} {employee.lastName || employee.last_name}
+                    {employee.firstName} {employee.lastName}
                   </TableCell>
                   <TableCell>{employee.department}</TableCell>
                   <TableCell>{employee.position}</TableCell>
@@ -84,7 +84,7 @@ const EmployeeTable: React.FC<EmployeeTableProps> = ({ employees }) => {
                     ${(employee.salary || 0).toLocaleString()}
                   </TableCell>
                   <TableCell className="text-right">
-                    {employee.performanceScore || employee.performance_score}
+                    {employee.performanceScore}
                   </TableCell>
                 </TableRow>
               ))
