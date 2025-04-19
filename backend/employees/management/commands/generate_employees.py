@@ -18,14 +18,14 @@ class Command(BaseCommand):
             Employee.objects.all().delete()
             self.stdout.write(self.style.SUCCESS('Data cleaned successfully'))
 
-        employee_count = options['employees']
-        attendance_per_employee = options['attendance_per_employee']
-        reviews_per_employee = options['reviews_per_employee']
+        employee_count = 200  # Fixed to generate exactly 200 employees
+        attendance_per_employee = 30  # 30 attendance records per employee
+        reviews_per_employee = 2  # 2 performance reviews per employee
         
         self.stdout.write(f'Generating {employee_count} employees...')
         
         # Generate employees in smaller batches to avoid memory issues
-        batch_size = 100
+        batch_size = 50
         for i in range(0, employee_count, batch_size):
             batch_count = min(batch_size, employee_count - i)
             employees = EmployeeFactory.create_batch(batch_count)
