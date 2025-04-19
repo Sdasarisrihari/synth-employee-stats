@@ -11,6 +11,10 @@ export default defineConfig({
     globals: true,
     coverage: {
       reporter: ['text', 'json', 'html'],
+    },
+    // Explicitly include jest-dom types
+    typecheck: {
+      include: ['**/*.{test,spec}.{ts,tsx}']
     }
   },
   resolve: {
