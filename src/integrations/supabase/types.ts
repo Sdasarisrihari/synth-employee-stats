@@ -9,13 +9,180 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      attendance: {
+        Row: {
+          created_at: string
+          date: string
+          employee_id: string
+          hours_worked: number
+          id: string
+          late_minutes: number
+          notes: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          date: string
+          employee_id: string
+          hours_worked: number
+          id?: string
+          late_minutes: number
+          notes?: string | null
+          status: string
+        }
+        Update: {
+          created_at?: string
+          date?: string
+          employee_id?: string
+          hours_worked?: number
+          id?: string
+          late_minutes?: number
+          notes?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attendance_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employees: {
+        Row: {
+          age: number
+          created_at: string
+          department: string
+          email: string
+          first_name: string
+          gender: string
+          hire_date: string
+          id: string
+          last_name: string
+          performance_score: number
+          position: string
+          salary: number
+          updated_at: string
+        }
+        Insert: {
+          age: number
+          created_at?: string
+          department: string
+          email: string
+          first_name: string
+          gender: string
+          hire_date: string
+          id?: string
+          last_name: string
+          performance_score: number
+          position: string
+          salary: number
+          updated_at?: string
+        }
+        Update: {
+          age?: number
+          created_at?: string
+          department?: string
+          email?: string
+          first_name?: string
+          gender?: string
+          hire_date?: string
+          id?: string
+          last_name?: string
+          performance_score?: number
+          position?: string
+          salary?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      performance_reviews: {
+        Row: {
+          comments: string | null
+          communication_score: number
+          created_at: string
+          employee_id: string
+          id: string
+          leadership_score: number
+          overall_score: number
+          review_date: string
+          reviewer_id: string
+          teamwork_score: number
+          technical_score: number
+        }
+        Insert: {
+          comments?: string | null
+          communication_score: number
+          created_at?: string
+          employee_id: string
+          id?: string
+          leadership_score: number
+          overall_score: number
+          review_date: string
+          reviewer_id: string
+          teamwork_score: number
+          technical_score: number
+        }
+        Update: {
+          comments?: string | null
+          communication_score?: number
+          created_at?: string
+          employee_id?: string
+          id?: string
+          leadership_score?: number
+          overall_score?: number
+          review_date?: string
+          reviewer_id?: string
+          teamwork_score?: number
+          technical_score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "performance_reviews_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_age_distribution: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          range: string
+          count: number
+        }[]
+      }
+      get_department_stats: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          department: string
+          employeecount: number
+          averagesalary: number
+          averageperformance: number
+        }[]
+      }
+      get_salary_distribution: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          range: string
+          count: number
+        }[]
+      }
+      get_tenure_distribution: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          range: string
+          count: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

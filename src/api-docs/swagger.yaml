@@ -1,0 +1,104 @@
+
+openapi: 3.0.0
+info:
+  title: Employee Analytics API
+  description: API documentation for the Employee Analytics Dashboard
+  version: 1.0.0
+servers:
+  - url: https://dvqtxzigrpeoopgeamqw.supabase.co/rest/v1
+    description: Supabase REST API
+paths:
+  /employees:
+    get:
+      summary: Get all employees
+      description: Retrieve a list of all employees with optional filtering
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Page number for pagination
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+          description: Number of items per page
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Employee'
+                  count:
+                    type: integer
+    post:
+      summary: Create new employee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeInput'
+      responses:
+        '201':
+          description: Employee created successfully
+
+components:
+  schemas:
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        department:
+          type: string
+        position:
+          type: string
+        salary:
+          type: number
+        hire_date:
+          type: string
+          format: date
+        performance_score:
+          type: number
+        age:
+          type: integer
+        gender:
+          type: string
+    EmployeeInput:
+      type: object
+      required:
+        - first_name
+        - last_name
+        - email
+        - department
+        - position
+        - salary
+      properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+        department:
+          type: string
+        position:
+          type: string
+        salary:
+          type: number
+
