@@ -10,6 +10,18 @@ interface GenderDistributionChartProps {
 const COLORS = ['#0ea5e9', '#f97316', '#6366f1'];
 
 const GenderDistributionChart: React.FC<GenderDistributionChartProps> = ({ genderDistribution }) => {
+  // Add console logging to help debug
+  console.log("Gender Distribution Data:", genderDistribution);
+  
+  // If no data or empty array, show a message
+  if (!genderDistribution || genderDistribution.length === 0) {
+    return (
+      <div className="h-64 flex items-center justify-center">
+        <p className="text-muted-foreground">No gender distribution data available. Try generating some employee data.</p>
+      </div>
+    );
+  }
+  
   const total = genderDistribution.reduce((sum, item) => sum + item.count, 0);
   
   // Add percentage to data for tooltip

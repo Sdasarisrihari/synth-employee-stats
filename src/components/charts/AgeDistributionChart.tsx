@@ -8,6 +8,18 @@ interface AgeDistributionChartProps {
 }
 
 const AgeDistributionChart: React.FC<AgeDistributionChartProps> = ({ ageDistribution }) => {
+  // Add console logging to help debug
+  console.log("Age Distribution Data:", ageDistribution);
+  
+  // If no data or empty array, show a message
+  if (!ageDistribution || ageDistribution.length === 0) {
+    return (
+      <div className="h-64 flex items-center justify-center">
+        <p className="text-muted-foreground">No age distribution data available. Try generating some employee data.</p>
+      </div>
+    );
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart

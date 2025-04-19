@@ -71,6 +71,7 @@ export const getDepartmentStats = async (): Promise<DepartmentStats[]> => {
     const { data, error } = await supabase.rpc('get_department_stats');
     
     if (error) throw error;
+    console.log("Department stats data:", data);
     return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch department stats: " + error.message);
@@ -87,6 +88,7 @@ export const getSalaryDistribution = async (): Promise<SalaryDistribution[]> => 
     const { data, error } = await supabase.rpc('get_salary_distribution');
     
     if (error) throw error;
+    console.log("Salary distribution data:", data);
     return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch salary distribution: " + error.message);
@@ -102,11 +104,69 @@ export const getAgeDistribution = async (): Promise<AgeDistribution[]> => {
   try {
     const { data, error } = await supabase.rpc('get_age_distribution');
     
-    if (error) throw error;
+    if (error) {
+      console.error("Error in RPC get_age_distribution:", error);
+      throw error;
+    }
+    
+    console.log("Age distribution data:", data);
+    
+    if (!data || data.length === 0) {
+      // If no data from RPC, fallback to manual calculation
+      console.log("No age distribution from RPC, calculating manually...");
+      return calculateAgeDistribution();
+    }
+    
     return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch age distribution: " + error.message);
     console.error("Error fetching age distribution:", error);
+    // Fallback to manual calculation
+    return calculateAgeDistribution();
+  }
+};
+
+// Manual calculation of age distribution as fallback
+const calculateAgeDistribution = async (): Promise<AgeDistribution[]> => {
+  try {
+    // Query directly from employees table
+    const { data, error } = await supabase
+      .from('employees')
+      .select('age');
+      
+    if (error) throw error;
+    
+    if (!data || data.length === 0) return [];
+    
+    // Create age ranges
+    const ageRanges: {[key: string]: number} = {
+      'Under 25': 0,
+      '25-34': 0,
+      '35-44': 0,
+      '45-54': 0,
+      '55+': 0
+    };
+    
+    // Count employees in each range
+    data.forEach(employee => {
+      const age = employee.age;
+      if (age < 25) ageRanges['Under 25']++;
+      else if (age >= 25 && age <= 34) ageRanges['25-34']++;
+      else if (age >= 35 && age <= 44) ageRanges['35-44']++;
+      else if (age >= 45 && age <= 54) ageRanges['45-54']++;
+      else ageRanges['55+']++;
+    });
+    
+    // Convert to expected format
+    const result: AgeDistribution[] = Object.entries(ageRanges).map(([range, count]) => ({
+      range,
+      count
+    }));
+    
+    console.log("Manually calculated age distribution:", result);
+    return result;
+  } catch (error: any) {
+    console.error("Error in manual age distribution calculation:", error);
     return [];
   }
 };
@@ -123,7 +183,7 @@ export const getGenderDistribution = async (): Promise<GenderDistribution[]> => 
       
     if (error) throw error;
     
-    if (!data) return [];
+    if (!data || data.length === 0) return [];
     
     // Manually count gender distribution
     const genderCounts: Record<string, number> = {};
@@ -133,10 +193,13 @@ export const getGenderDistribution = async (): Promise<GenderDistribution[]> => 
     });
     
     // Convert to expected format
-    return Object.entries(genderCounts).map(([gender, count]) => ({
+    const result = Object.entries(genderCounts).map(([gender, count]) => ({
       gender,
       count
     }));
+    
+    console.log("Gender distribution data:", result);
+    return result;
   } catch (error: any) {
     toast.error("Failed to fetch gender distribution: " + error.message);
     console.error("Error fetching gender distribution:", error);
