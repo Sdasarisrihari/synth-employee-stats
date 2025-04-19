@@ -3,36 +3,18 @@ import { expect, afterEach, vi } from 'vitest';
 import { cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
-// This is necessary to fix the TypeScript error for jest-dom extensions
-declare global {
-  namespace Vi {
-    interface JestAssertion<T = any> {
-      toBeInTheDocument(): T;
-      toBeVisible(): T;
-      toHaveFocus(): T;
-      toHaveTextContent(text: string | RegExp): T;
-      toHaveAttribute(attr: string, value?: any): T;
-      toHaveClass(...classNames: string[]): T;
-      toHaveStyle(css: Record<string, any>): T;
-      toContainElement(element: HTMLElement | null): T;
-      toContainHTML(html: string): T;
-    }
-  }
-}
-
-// Cleanup after each test
+// Additional setup for Vitest
 afterEach(() => {
   cleanup();
 });
 
-// Mock the ResizeObserver
+// Mock global browser APIs
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   unobserve: vi.fn(),
   disconnect: vi.fn(),
 }));
 
-// Mock matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation(query => ({

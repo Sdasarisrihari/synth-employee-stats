@@ -1,20 +1,26 @@
 
 /// <reference types="@testing-library/jest-dom" />
+/// <reference types="vitest" />
 
 // This file augments the DOM testing library with jest-dom matchers
 import '@testing-library/jest-dom';
 
 // Declare global Jest matchers from jest-dom
-declare namespace jest {
-  interface Matchers<R> {
-    toBeInTheDocument(): R;
-    toBeVisible(): R;
-    toHaveFocus(): R;
-    toHaveTextContent(text: string | RegExp): R;
-    toHaveAttribute(attr: string, value?: any): R;
-    toHaveClass(...classNames: string[]): R;
-    toHaveStyle(css: Record<string, any>): R;
-    toContainElement(element: HTMLElement | null): R;
-    toContainHTML(html: string): R;
+declare global {
+  namespace Vi {
+    interface JestAssertion<T = any> {
+      toBeInTheDocument(): T;
+      toBeVisible(): T;
+      toHaveFocus(): T;
+      toHaveTextContent(text: string | RegExp): T;
+      toHaveAttribute(attr: string, value?: any): T;
+      toHaveClass(...classNames: string[]): T;
+      toHaveStyle(css: Record<string, any>): T;
+      toContainElement(element: HTMLElement | null): T;
+      toContainHTML(html: string): T;
+    }
   }
 }
+
+// Export to ensure the module is treated as a module
+export {};
