@@ -28,6 +28,15 @@ export default {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
 				},
+				dashboard: {
+					blue: '#0ea5e9',
+					teal: '#14b8a6',
+					indigo: '#6366f1',
+					purple: '#a855f7',
+					red: '#ef4444',
+					orange: '#f97316',
+					green: '#22c55e'
+				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'
