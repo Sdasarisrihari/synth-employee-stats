@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { AgeDistribution } from '@/lib/mockApi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Button } from '@/components/ui/button';
 
 interface AgeDistributionChartProps {
   ageDistribution: AgeDistribution[];
