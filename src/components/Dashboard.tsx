@@ -120,8 +120,22 @@ const Dashboard: React.FC = () => {
   const genderDistribution = genderDistributionQuery.data || [];
   const tenureDistribution = tenureDistributionQuery.data || [];
   
+  // Map Supabase employees to the Employee interface expected by components
+  const employeeList = employees.map(emp => ({
+    id: emp.id,
+    firstName: emp.first_name,
+    lastName: emp.last_name,
+    email: emp.email,
+    gender: emp.gender,
+    age: emp.age,
+    department: emp.department,
+    position: emp.position,
+    salary: emp.salary,
+    hireDate: emp.hire_date,
+    performanceScore: emp.performance_score,
+  })) as Employee[];
+    
   // Calculate summary metrics from real data
-  const employeeList = employees as unknown as Employee[]; // Type cast for compatibility
   const averageSalary = employeeList.length > 0 
     ? Math.round(employeeList.reduce((sum, emp) => sum + (emp.salary || 0), 0) / employeeList.length) 
     : 0;

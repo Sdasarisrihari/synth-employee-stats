@@ -8,9 +8,7 @@ import {
   TenureDistribution 
 } from "./mockApi";
 import { Tables, Insertable } from "./supabase-types";
-
-// API base URL - this should point to the Django backend
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+import { supabase } from "./supabase";
 
 // Rate limiting implementation - simple frontend rate limiting
 let lastRequestTime = 0;
@@ -26,15 +24,6 @@ const checkRateLimit = (): boolean => {
   return true;
 };
 
-// Helper function to get auth headers for authenticated requests
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('authToken');
-  return {
-    'Content-Type': 'application/json',
-    'Authorization': token ? `Bearer ${token}` : ''
-  };
-};
-
 // Fetch employees with pagination and filtering
 export const fetchEmployees = async (
   page = 1,
@@ -44,29 +33,32 @@ export const fetchEmployees = async (
   if (!checkRateLimit()) return { data: [], count: 0 };
 
   try {
-    let url = `${API_URL}/employees/?page=${page}&page_size=${pageSize}`;
+    let query = supabase.from('employees').select('*', { count: 'exact' });
     
+    // Add search if provided
     if (searchTerm) {
-      url += `&search=${encodeURIComponent(searchTerm)}`;
+      query = query.or(
+        `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,department.ilike.%${searchTerm}%,position.ilike.%${searchTerm}%`
+      );
     }
-
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const result = await response.json();
+    
+    // Add pagination
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
+    
+    const { data, error, count } = await query
+      .order('created_at', { ascending: false })
+      .range(from, to);
+      
+    if (error) throw error;
     
     return { 
-      data: result.results, 
-      count: result.count 
+      data: data || [], 
+      count: count || 0 
     };
   } catch (error: any) {
     toast.error("Failed to fetch employees: " + error.message);
+    console.error("Error fetching employees:", error);
     return { data: [], count: 0 };
   }
 };
@@ -76,17 +68,10 @@ export const getDepartmentStats = async (): Promise<DepartmentStats[]> => {
   if (!checkRateLimit()) return [];
 
   try {
-    const response = await fetch(`${API_URL}/analytics/departments/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const { data, error } = await supabase.rpc('get_department_stats');
+    
+    if (error) throw error;
+    return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch department stats: " + error.message);
     console.error("Error fetching department stats:", error);
@@ -99,19 +84,13 @@ export const getSalaryDistribution = async (): Promise<SalaryDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const response = await fetch(`${API_URL}/analytics/salary-distribution/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const { data, error } = await supabase.rpc('get_salary_distribution');
+    
+    if (error) throw error;
+    return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch salary distribution: " + error.message);
+    console.error("Error fetching salary distribution:", error);
     return [];
   }
 };
@@ -121,19 +100,13 @@ export const getAgeDistribution = async (): Promise<AgeDistribution[]> => {
   if (!checkRateLimit()) return [];
 
   try {
-    const response = await fetch(`${API_URL}/analytics/age-distribution/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const { data, error } = await supabase.rpc('get_age_distribution');
+    
+    if (error) throw error;
+    return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch age distribution: " + error.message);
+    console.error("Error fetching age distribution:", error);
     return [];
   }
 };
@@ -143,19 +116,30 @@ export const getGenderDistribution = async (): Promise<GenderDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const response = await fetch(`${API_URL}/analytics/gender-distribution/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
+    // Query directly from employees table and aggregate gender data
+    const { data, error } = await supabase
+      .from('employees')
+      .select('gender');
+      
+    if (error) throw error;
+    
+    if (!data) return [];
+    
+    // Manually count gender distribution
+    const genderCounts: Record<string, number> = {};
+    data.forEach(employee => {
+      const gender = employee.gender || 'Unknown';
+      genderCounts[gender] = (genderCounts[gender] || 0) + 1;
     });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    
+    // Convert to expected format
+    return Object.entries(genderCounts).map(([gender, count]) => ({
+      gender,
+      count
+    }));
   } catch (error: any) {
     toast.error("Failed to fetch gender distribution: " + error.message);
+    console.error("Error fetching gender distribution:", error);
     return [];
   }
 };
@@ -165,19 +149,13 @@ export const getTenureDistribution = async (): Promise<TenureDistribution[]> => 
   if (!checkRateLimit()) return [];
 
   try {
-    const response = await fetch(`${API_URL}/analytics/tenure-distribution/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    const { data, error } = await supabase.rpc('get_tenure_distribution');
+    
+    if (error) throw error;
+    return data || [];
   } catch (error: any) {
     toast.error("Failed to fetch tenure distribution: " + error.message);
+    console.error("Error fetching tenure distribution:", error);
     return [];
   }
 };
@@ -187,20 +165,17 @@ export const insertEmployees = async (employees: Insertable<"employees">[]) => {
   if (!checkRateLimit()) return { success: false };
 
   try {
-    const response = await fetch(`${API_URL}/employees/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify(employees)
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
-    }
+    const { error } = await supabase
+      .from('employees')
+      .insert(employees);
+      
+    if (error) throw error;
     
     toast.success("Employees added successfully!");
     return { success: true };
   } catch (error: any) {
     toast.error("Failed to add employees: " + error.message);
+    console.error("Error adding employees:", error);
     return { success: false };
   }
 };
@@ -210,19 +185,31 @@ export const exportEmployeesToCSV = async () => {
   if (!checkRateLimit()) return;
 
   try {
-    const response = await fetch(`${API_URL}/export/employees/`, {
-      method: 'GET',
-      headers: getAuthHeaders()
-    });
-
-    if (!response.ok) {
-      throw new Error(`API error: ${response.status}`);
+    const { data, error } = await supabase
+      .from('employees')
+      .select('*');
+      
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      toast.warning("No data to export");
+      return;
     }
     
-    // Get the CSV content
-    const blob = await response.blob();
+    // Convert data to CSV
+    const headers = Object.keys(data[0]);
+    const csvContent = [
+      headers.join(','), // CSV header row
+      ...data.map(row => headers.map(key => {
+        // Handle values that might contain commas or quotes
+        const value = String(row[key as keyof typeof row] ?? '');
+        return value.includes(',') || value.includes('"') 
+          ? `"${value.replace(/"/g, '""')}"` 
+          : value;
+      }).join(','))
+    ].join('\n');
     
-    // Create a download link and trigger it
+    // Create download link
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -233,5 +220,6 @@ export const exportEmployeesToCSV = async () => {
     toast.success("CSV exported successfully!");
   } catch (error: any) {
     toast.error("Failed to export data: " + error.message);
+    console.error("Error exporting data:", error);
   }
 };
